@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Agenda Personal</title>
+  <!-- Fuentes de Google: Caveat y Patrick Hand para títulos/manuscrito, Nunito para lectura legible -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       VARIABLES Y TEMA: ESTILO CUADERNO / PAPEL
+       ========================================================================== */
+    :root {
+      /* Colores tipo tinta */
+      --tinta-azul: #132a4a;
+      --tinta-azul-suave: #1e3a5f;
+      --tinta-roja: #b91c1c;
+      --tinta-grafito: #334155;
+      --tinta-tenue: #64748b;
+      
+      /* Colores de papel y libreta */
+      --escritorio-fondo: #e8e0d2;
+      --papel-fondo: #fcfaf4;
+      --papel-renglon: rgba(160, 190, 225, 0.45);
+      --papel-margen-rojo: rgba(239, 68, 68, 0.5);
+      --cuaderno-portada: #78350f;
+      --cuaderno-lomo: #592507;
+      --cuaderno-sombra: rgba(40, 24, 12, 0.18);
+      
+      /* Colores resaltador */
+      --resaltador-alta: #fee2e2;
+      --resaltador-alta-texto: #991b1b;
+      --resaltador-alta-borde: #f87171;
+      
+      --resaltador-media: #fef3c7;
+      --resaltador-media-texto: #92400e;
+      --resaltador-media-borde: #facc15;
+      
+      --resaltador-baja: #dcfce7;
+      --resaltador-baja-texto: #166534;
+      --resaltador-baja-borde: #4ade80;
+
+      /* Post-its */
+      --postit-amarillo: #fef9c3;
+      --postit-rosa: #fce7f3;
+      --postit-verde: #dcfce7;
+      --postit-azul: #e0f2fe;
+      --postit-morado: #f3e8ff;
+
+      /* Tipografías */
+      --fuente-manuscrita: 'Caveat', cursive, sans-serif;
+      --fuente-nota: 'Patrick Hand', cursive, sans-serif;
+      --fuente-lectura: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Reset accesible y base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--escritorio-fondo);
+      background-image: 
+        radial-gradient(#d5ccbc 15%, transparent 16%),
+        radial-gradient(#dfd7c9 15%, transparent 16%);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+      color: var(--tinta-azul);
+      font-family: var(--fuente-lectura);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    /* Accesibilidad: foco visible */
+    :focus-visible {
+      outline: 3px dashed var(--tinta-azul-suave);
+      outline-offset: 3px;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: 1rem;
+      color: inherit;
+    }
+
+    /* ==========================================================================
+       BARRA SUPERIOR (ESCRITORIO / ACCIONES GLOBALES)
+       ========================================================================== */
+    .top-toolbar {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 4px 6px;
+    }
+
+    .brand-title {
+      font-family: var(--fuente-manuscrita);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--tinta-azul);
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title span.stamp {
+      font-size: 0.95rem;
+      font-family: var(--fuente-lectura);
+      font-weight: 700;
+      color: var(--tinta-roja);
+      border: 2px solid var(--tinta-roja);
+      border-radius: 6px;
+      padding: 2px 8px;
+      transform: rotate(-3deg);
+      display: inline-block;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Botones base (mínimo 44px para dedos móviles) */
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--tinta-tenue);
+      background: #ffffff;
+      color: var(--tinta-azul);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+      background-color: #f8fafc;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-ink {
+      background-color: var(--tinta-azul-suave);
+      color: #ffffff;
+      border-color: var(--tinta-azul);
+    }
+    .btn-ink:hover {
+      background-color: var(--tinta-azul);
+      color: #ffffff;
+    }
+
+    .btn-danger {
+      background-color: #fee2e2;
+      color: var(--tinta-roja);
+      border-color: #fca5a5;
+    }
+    .btn-danger:hover {
+      background-color: #fecaca;
+    }
+
+    .btn-small {
+      min-height: 38px;
+      min-width: 38px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+    }
+
+    /* ==========================================================================
+       PESTAÑAS DE CUADERNO (TABS)
+       ========================================================================== */
+    .notebook-tabs-bar {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      gap: 6px;
+      padding-left: 20px;
+      margin-bottom: -4px;
+      z-index: 10;
+    }
+
+    .notebook-tab {
+      min-height: 46px;
+      padding: 10px 18px;
+      font-family: var(--fuente-nota);
+      font-size: 1.25rem;
+      border: 1px solid #c9bda8;
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
+      background: #e2d7c5;
+      color: var(--tinta-grafito);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 -3px 4px rgba(0,0,0,0.05);
+    }
+
+    .notebook-tab:hover {
+      background: #eee4d3;
+      color: var(--tinta-azul);
+    }
+
+    .notebook-tab.active {
+      background: var(--papel-fondo);
+      color: var(--tinta-azul);
+      font-weight: 700;
+      box-shadow: 0 -3px 8px rgba(0,0,0,0.06);
+      border-color: #b5a892;
+      transform: translateY(-2px);
+    }
+
+    /* Pestaña de color individual estilo separador */
+    .notebook-tab[data-tab="calendario"].active {
+      border-top: 4px solid #f97316;
+    }
+    .notebook-tab[data-tab="tareas"].active {
+      border-top: 4px solid #10b981;
+    }
+    .notebook-tab[data-tab="notas"].active {
+      border-top: 4px solid #facc15;
+    }
+
+    /* ==========================================================================
+       ESTRUCTURA DEL CUADERNO (RESPONSIVO COMPUTADORA / CELULAR)
+       ========================================================================== */
+    .notebook-container {
+      width: 100%;
+      max-width: 1200px;
+      background-color: var(--cuaderno-portada);
+      border-radius: 16px;
+      padding: 8px;
+      box-shadow: 
+        0 20px 40px var(--cuaderno-sombra),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .notebook-spread {
+      background-color: var(--papel-fondo);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.05);
+      border: 1px solid #dcd4c3;
+    }
+
+    /* Papel con renglones y margen */
+    .notebook-page {
+      background-color: var(--papel-fondo);
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 31px,
+        var(--papel-renglon) 32px
+      );
+      background-size: 100% 32px;
+      position: relative;
+      padding: 24px 20px 24px 44px;
+      flex: 1;
+    }
+
+    /* Línea de margen roja */
+    .notebook-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 32px;
+      width: 2px;
+      background-color: var(--papel-margen-rojo);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Espiral o agujeros en el borde */
+    .notebook-spine {
+      display: none; /* Se activa en pantallas grandes */
+    }
+
+    /* Encabezados manuscritos de página */
+    .page-title {
+      font-family: var(--fuente-manuscrita);
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--tinta-azul-suave);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px dashed rgba(30, 58, 95, 0.2);
+      padding-bottom: 6px;
+    }
+
+    .page-title-badge {
+      font-family: var(--fuente-nota);
+      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px dashed var(--tinta-tenue);
+      border-radius: 20px;
+      padding: 2px 10px;
+      color: var(--tinta-grafito);
+    }
+
+    /* ==========================================================================
+       SUBPESTAÑAS DE PÁGINA DERECHA (EN ESCRITORIO O MÓVIL)
+       ========================================================================== */
+    .right-page-subtabs {
+      display: none; /* Por defecto en móvil, las pestañas superiores controlan todo */
+      gap: 6px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #cbd5e1;
+      padding-bottom: 0;
+    }
+
+    .subtab-btn {
+      min-height: 42px;
+      padding: 6px 16px;
+      font-family: var(--fuente-nota);
+      font-size: 1.15rem;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid #cbd5e1;
+      border-bottom: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      color: var(--tinta-grafito);
+      transition: all 0.15s ease;
+      position: relative;
+      bottom: -2px;
+    }
+
+    .subtab-btn:hover {
+      background: #e2e8f0;
+      color: var(--tinta-azul);
+    }
+
+    .subtab-btn.active {
+      background: var(--papel-fondo);
+      color: var(--tinta-azul);
+      border-color: #94a3b8;
+      border-bottom: 2px solid var(--papel-fondo);
+      font-weight: 700;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+    }
+
+    .subtab-btn[data-subtab="tareas"].active {
+      border-top: 3px solid #10b981;
+    }
+    .subtab-btn[data-subtab="notas"].active {
+      border-top: 3px solid #facc15;
+    }
+    .subtab-btn[data-subtab="ambas"].active {
+      border-top: 3px solid #8b5cf6;
+    }
+
+    /* ==========================================================================
+       SECCIÓN 1: CALENDARIO Y EVENTOS
+       ========================================================================== */
+    .calendar-widget {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      margin-bottom: 20px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+
+    .calendar-current-month {
+      font-family: var(--fuente-manuscrita);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--tinta-azul);
+      text-transform: capitalize;
+      text-align: center;
+      flex: 1;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-family: var(--fuente-nota);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--tinta-azul-suave);
+      padding: 4px 0;
+    }
+
+    .calendar-day {
+      min-height: 44px;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .calendar-day:hover:not(.empty) {
+      background-color: rgba(30, 58, 95, 0.08);
+    }
+
+    .calendar-day.empty {
+      cursor: default;
+      opacity: 0.3;
+    }
+
+    /* Día actual con círculo rojo tipo pluma */
+    .calendar-day.is-today .day-num {
+      border: 2px solid var(--tinta-roja);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tinta-roja);
+      font-weight: 800;
+    }
+
+    /* Día seleccionado */
+    .calendar-day.is-selected {
+      background-color: #dbeafe !important;
+      border-color: #3b82f6 !important;
+      color: #1e3a8a;
+    }
+
+    /* Puntos indicadores en el calendario */
+    .day-indicators {
+      display: flex;
+      gap: 3px;
+      margin-top: 2px;
+      height: 6px;
+    }
+
+    .dot-event {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--tinta-azul-suave);
+    }
+
+    .dot-task {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #ef4444;
+    }
+
+    /* Agenda del día seleccionado */
+    .day-agenda-box {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .day-agenda-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+
+    .day-agenda-date {
+      font-family: var(--fuente-nota);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--tinta-roja);
+    }
+
+    .events-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .event-card {
+      background: #ffffff;
+      border-left: 4px solid var(--tinta-azul-suave);
+      border-radius: 6px;
+      padding: 10px 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .event-info {
+      flex: 1;
+    }
+
+    .event-time-pill {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--tinta-azul);
+      background: #e2e8f0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .event-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--tinta-azul);
+    }
+
+    .event-note {
+      font-size: 0.92rem;
+      color: var(--tinta-grafito);
+      margin-top: 3px;
+      font-style: italic;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* ==========================================================================
+       SECCIÓN 2: TAREAS CON PRIORIDAD
+       ========================================================================== */
+    .task-creation-panel {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .task-form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 580px) {
+      .task-form-grid {
+        grid-template-columns: 2fr 1fr 1fr auto;
+        align-items: end;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--tinta-grafito);
+    }
+
+    .input-field, .select-field {
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--tinta-azul);
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .input-field:focus, .select-field:focus {
+      border-color: var(--tinta-azul-suave);
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      border: 1px dashed #cbd5e1;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--tinta-grafito);
+    }
+
+    .filter-select {
+      min-height: 38px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      font-size: 0.9rem;
+      color: var(--tinta-azul);
+    }
+
+    .tasks-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-card {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: all 0.15s ease;
+    }
+
+    .task-card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Checkbox táctil amigable */
+    .task-checkbox-btn {
+      min-width: 32px;
+      min-height: 32px;
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--tinta-azul-suave);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--tinta-azul);
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .task-checkbox-btn.checked {
+      background-color: var(--tinta-azul-suave);
+      color: #ffffff;
+    }
+
+    .task-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--tinta-azul);
+      word-break: break-word;
+    }
+
+    .task-card.is-completed .task-title {
+      text-decoration: line-through;
+      color: var(--tinta-tenue);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Resaltadores de prioridad */
+    .badge-priority {
+      font-family: var(--fuente-nota);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 4px;
+      display: inline-block;
+      line-height: 1.2;
+    }
+
+    .priority-alta {
+      background-color: var(--resaltador-alta);
+      color: var(--resaltador-alta-texto);
+      border-left: 3px solid var(--resaltador-alta-borde);
+    }
+
+    .priority-media {
+      background-color: var(--resaltador-media);
+      color: var(--resaltador-media-texto);
+      border-left: 3px solid var(--resaltador-media-borde);
+    }
+
+    .priority-baja {
+      background-color: var(--resaltador-baja);
+      color: var(--resaltador-baja-texto);
+      border-left: 3px solid var(--resaltador-baja-borde);
+    }
+
+    .task-due-date {
+      font-size: 0.85rem;
+      color: var(--tinta-grafito);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-due-date.is-overdue {
+      color: var(--tinta-roja);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       SECCIÓN 3: NOTAS RÁPIDAS (POST-ITS)
+       ========================================================================== */
+    .note-quick-entry {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .note-input-row {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    @media (min-width: 580px) {
+      .note-input-row {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+
+    .note-search-bar {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .note-search-input {
+      min-height: 44px;
+      padding: 8px 14px 8px 38px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .note-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--tinta-tenue);
+      pointer-events: none;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 8px 4px;
+    }
+
+    @media (min-width: 500px) {
+      .notes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+
+    /* Papelito / Post-it */
+    .post-it {
+      position: relative;
+      padding: 22px 14px 14px;
+      min-height: 160px;
+      border-radius: 2px;
+      box-shadow: 2px 5px 12px rgba(40, 25, 10, 0.12), 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .post-it:hover {
+      box-shadow: 4px 10px 18px rgba(40, 25, 10, 0.18);
+      z-index: 5;
+    }
+
+    /* Cinta adhesiva washi en el post-it */
+    .washi-tape {
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 65px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      border-left: 2px dashed rgba(0, 0, 0, 0.15);
+      border-right: 2px dashed rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+    }
+
+    .post-it-text {
+      font-family: var(--fuente-nota);
+      font-size: 1.25rem;
+      line-height: 1.35;
+      color: #1e293b;
+      white-space: pre-wrap;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    /* Edición en el mismo lugar */
+    .post-it-inline-edit {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .post-it-textarea {
+      width: 100%;
+      min-height: 100px;
+      border: 1px dashed rgba(0,0,0,0.3);
+      background: rgba(255, 255, 255, 0.85);
+      font-family: var(--fuente-nota);
+      font-size: 1.25rem;
+      padding: 6px;
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    .post-it-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(0,0,0,0.1);
+      font-size: 0.8rem;
+      color: var(--tinta-grafito);
+    }
+
+    .color-yellow { background-color: var(--postit-amarillo); }
+    .color-pink   { background-color: var(--postit-rosa); }
+    .color-green  { background-color: var(--postit-verde); }
+    .color-blue   { background-color: var(--postit-azul); }
+    .color-purple { background-color: var(--postit-morado); }
+
+    /* ==========================================================================
+       ESTADOS VACÍOS AMIGABLES
+       ========================================================================== */
+    .empty-state {
+      text-align: center;
+      padding: 30px 16px;
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .empty-state-icon {
+      font-size: 2.4rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .empty-state-text {
+      font-family: var(--fuente-nota);
+      font-size: 1.3rem;
+      color: var(--tinta-grafito);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       MODAL ACCESIBLE (DIALOG)
+       ========================================================================== */
+    dialog.app-modal {
+      border: none;
+      border-radius: 14px;
+      background: var(--papel-fondo);
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 31px,
+        var(--papel-renglon) 32px
+      );
+      padding: 24px;
+      max-width: 480px;
+      width: calc(100% - 32px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      margin: auto;
+      color: var(--tinta-azul);
+    }
+
+    dialog.app-modal::backdrop {
+      background: rgba(20, 15, 10, 0.55);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 2px dashed rgba(30, 58, 95, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .modal-title {
+      font-family: var(--fuente-manuscrita);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--tinta-azul-suave);
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* ==========================================================================
+       NOTIFICACIONES (TOAST)
+       ========================================================================== */
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--tinta-azul);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       RESPONSIVIDAD: COMPUTADORA (CUADERNO A DOS PÁGINAS)
+       ========================================================================== */
+    @media (min-width: 960px) {
+      body {
+        padding: 24px;
+      }
+
+      /* En computadora, el cuaderno se abre a dos páginas */
+      .notebook-spread {
+        flex-direction: row;
+        min-height: 720px;
+      }
+
+      /* Página izquierda: Calendario y eventos */
+      .page-left {
+        flex: 1;
+        border-right: 1px solid #d4c8b4;
+        display: block !important;
+      }
+
+      /* Espiral central entre las dos páginas */
+      .notebook-spine {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        width: 32px;
+        background: linear-gradient(to right, #cfc5b3, #eae2d3 40%, #b8ad9a);
+        padding: 16px 0;
+        z-index: 4;
+        box-shadow: inset 0 0 8px rgba(0,0,0,0.15);
+      }
+
+      .spine-ring {
+        width: 38px;
+        height: 12px;
+        background: linear-gradient(to bottom, #f3f4f6, #6b7280 50%, #d1d5db);
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      }
+
+      /* Página derecha: Tareas y Notas */
+      .page-right {
+        flex: 1;
+        display: block !important;
+      }
+
+      /* En escritorio, mostramos las subpestañas de la página derecha */
+      .right-page-subtabs {
+        display: flex;
+      }
+
+      /* Ocultamos las pestañas superiores de 'Tareas' y 'Notas' en escritorio
+         porque la libreta ya tiene ambas páginas abiertas lado a lado */
+      .notebook-tabs-bar {
+        display: none;
+      }
+    }
+
+    /* En móvil: una página a la vez */
+    @media (max-width: 959px) {
+      .page-view {
+        display: none;
+      }
+
+      .page-view.active-mobile-view {
+        display: block;
+      }
+    }
+
+    /* Respeto a usuarios que prefieren reducir el movimiento */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR DE ACCIONES GLOBALES -->
+  <header class="top-toolbar" role="banner">
+    <h1 class="brand-title">
+      Mi Agenda Personal
+      <span class="stamp" id="today-stamp">Hoy</span>
+    </h1>
+
+    <!-- Botones de Respaldo JSON -->
+    <div class="backup-actions">
+      <button id="btn-exportar" class="btn" title="Descargar copia de seguridad en archivo JSON" aria-label="Exportar respaldo en formato JSON">
+        💾 Exportar respaldo
+      </button>
+      <button id="btn-importar" class="btn" title="Restaurar datos desde un archivo JSON" aria-label="Importar respaldo desde archivo JSON">
+        📂 Importar respaldo
+      </button>
+      <!-- Input de archivo oculto para la importación -->
+      <input type="file" id="file-import" accept=".json" style="display: none;" aria-hidden="true">
+    </div>
+  </header>
+
+  <!-- PESTAÑAS DE CUADERNO (VISIBLES EN CELULAR PARA CAMBIAR DE PÁGINA) -->
+  <nav class="notebook-tabs-bar" role="tablist" aria-label="Secciones del cuaderno">
+    <button class="notebook-tab active" role="tab" aria-selected="true" aria-controls="view-calendario" data-tab="calendario" id="tab-calendario">
+      📅 Calendario
+    </button>
+    <button class="notebook-tab" role="tab" aria-selected="false" aria-controls="view-tareas" data-tab="tareas" id="tab-tareas">
+      ✅ Tareas
+    </button>
+    <button class="notebook-tab" role="tab" aria-selected="false" aria-controls="view-notas" data-tab="notas" id="tab-notas">
+      📝 Notas
+    </button>
+  </nav>
+
+  <!-- CUADERNO ABIERTO -->
+  <main class="notebook-container" role="main">
+    <div class="notebook-spread">
+      
+      <!-- ================= PÁGINA IZQUIERDA: CALENDARIO Y EVENTOS ================= -->
+      <section class="notebook-page page-left page-view active-mobile-view" id="view-calendario" aria-labelledby="heading-calendario">
+        <div class="page-title">
+          <span id="heading-calendario">Calendario y Eventos</span>
+          <span class="page-title-badge">Mes a la vista</span>
+        </div>
+
+        <!-- Widget del Calendario Mensual -->
+        <div class="calendar-widget" aria-label="Calendario mensual">
+          <div class="calendar-nav">
+            <button class="btn btn-small" id="cal-prev-month" aria-label="Mes anterior" title="Mes anterior">◀ Anterior</button>
+            <span class="calendar-current-month" id="cal-month-year" aria-live="polite"></span>
+            <button class="btn btn-small" id="cal-today-btn" aria-label="Ir a hoy" title="Ir al día de hoy">Hoy</button>
+            <button class="btn btn-small" id="cal-next-month" aria-label="Mes siguiente" title="Mes siguiente">Siguiente ▶</button>
+          </div>
+
+          <!-- Encabezado de días de la semana (Empieza en Lunes) -->
+          <div class="calendar-grid" role="row">
+            <div class="calendar-weekday" role="columnheader">Lun</div>
+            <div class="calendar-weekday" role="columnheader">Mar</div>
+            <div class="calendar-weekday" role="columnheader">Mié</div>
+            <div class="calendar-weekday" role="columnheader">Jue</div>
+            <div class="calendar-weekday" role="columnheader">Vie</div>
+            <div class="calendar-weekday" role="columnheader">Sáb</div>
+            <div class="calendar-weekday" role="columnheader">Dom</div>
+          </div>
+
+          <!-- Días del mes (generados por JS) -->
+          <div class="calendar-grid" id="calendar-days-container" role="grid" aria-label="Días del mes"></div>
+        </div>
+
+        <!-- Lista de Eventos del Día Seleccionado -->
+        <div class="day-agenda-box">
+          <div class="day-agenda-header">
+            <h2 class="day-agenda-date" id="selected-day-title">Eventos del día</h2>
+            <button class="btn btn-ink btn-small" id="btn-nuevo-evento" aria-label="Agregar evento para el día seleccionado">
+              + Agregar evento
+            </button>
+          </div>
+          
+          <ul class="events-list" id="events-container" aria-live="polite">
+            <!-- Eventos generados dinámicamente -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- ESPIRAL CENTRAL (CUADERNO ABIERTO EN ESCRITORIO) -->
+      <div class="notebook-spine" aria-hidden="true">
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+      </div>
+
+      <!-- ================= PÁGINA DERECHA: TAREAS Y NOTAS ================= -->
+      <section class="notebook-page page-right page-view" id="view-derecha">
+        
+        <!-- Subpestañas en escritorio para alternar entre tareas y notas en la página derecha -->
+        <div class="right-page-subtabs" role="tablist" aria-label="Secciones de la página derecha">
+          <button class="subtab-btn active" role="tab" aria-selected="true" data-subtab="tareas" id="subtab-tareas">
+            ✅ Tareas con prioridad
+          </button>
+          <button class="subtab-btn" role="tab" aria-selected="false" data-subtab="notas" id="subtab-notas">
+            📝 Notas rápidas
+          </button>
+          <button class="subtab-btn" role="tab" aria-selected="false" data-subtab="ambas" id="subtab-ambas">
+            📋 Ver ambas
+          </button>
+        </div>
+
+        <!-- CONTENEDOR DE TAREAS -->
+        <div id="section-tareas" class="subpage-section">
+          <div class="page-title">
+            <span>Tareas con Prioridad</span>
+            <span class="page-title-badge" id="tasks-count-badge">0 pendientes</span>
+          </div>
+
+          <!-- Formulario rápido de nueva tarea -->
+          <div class="task-creation-panel">
+            <form id="form-nueva-tarea" class="task-form-grid" autocomplete="off">
+              <div class="form-group">
+                <label for="task-input-title" class="form-label">Título de la tarea *</label>
+                <input type="text" id="task-input-title" class="input-field" placeholder="¿Qué necesitas hacer?" required>
+              </div>
+
+              <div class="form-group">
+                <label for="task-input-priority" class="form-label">Prioridad</label>
+                <select id="task-input-priority" class="select-field">
+                  <option value="alta">🔴 Alta</option>
+                  <option value="media" selected>🟡 Media</option>
+                  <option value="baja">🟢 Baja</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="task-input-date" class="form-label">Fecha límite</label>
+                <input type="date" id="task-input-date" class="input-field">
+              </div>
+
+              <button type="submit" class="btn btn-ink" style="height: 44px;">
+                + Agregar
+              </button>
+            </form>
+          </div>
+
+          <!-- Filtros de Tareas -->
+          <div class="filter-bar" aria-label="Filtros de tareas">
+            <div class="filter-group">
+              <label for="filter-priority" class="filter-label">Prioridad:</label>
+              <select id="filter-priority" class="filter-select">
+                <option value="todas">Todas</option>
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="baja">Baja</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-status" class="filter-label">Estado:</label>
+              <select id="filter-status" class="filter-select">
+                <option value="todas">Todas</option>
+                <option value="pendientes" selected>Solo pendientes</option>
+                <option value="hechas">Solo hechas</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Lista de Tareas -->
+          <ul class="tasks-list" id="tasks-container" aria-live="polite">
+            <!-- Tareas renderizadas dinámicamente -->
+          </ul>
+        </div>
+
+        <!-- CONTENEDOR DE NOTAS RÁPIDAS -->
+        <div id="section-notas" class="subpage-section" style="margin-top: 24px;">
+          <div class="page-title">
+            <span>Notas Rápidas</span>
+            <span class="page-title-badge">Post-its</span>
+          </div>
+
+          <!-- Campo para anotar en un toque -->
+          <div class="note-quick-entry">
+            <form id="form-nueva-nota" class="note-input-row" autocomplete="off">
+              <input type="text" id="note-input-text" class="input-field" placeholder="Anota una idea en un toque..." required style="flex: 1;">
+              <select id="note-color-select" class="select-field" style="width: auto; min-width: 140px;" aria-label="Color del papelito">
+                <option value="color-yellow">🟡 Amarillo</option>
+                <option value="color-pink">🌸 Rosa</option>
+                <option value="color-green">🌱 Verde</option>
+                <option value="color-blue">💧 Azul</option>
+                <option value="color-purple">💜 Lavanda</option>
+              </select>
+              <button type="submit" class="btn btn-ink">
+                📌 Pegar nota
+              </button>
+            </form>
+          </div>
+
+          <!-- Barra de búsqueda de notas -->
+          <div class="note-search-bar">
+            <span class="note-search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="note-search-input" class="note-search-input" placeholder="Buscar en notas por texto..." aria-label="Buscar notas">
+          </div>
+
+          <!-- Muro de post-its -->
+          <div class="notes-grid" id="notes-container" aria-live="polite">
+            <!-- Notas renderizadas dinámicamente -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL ACCESIBLE: EVENTO (AGREGAR / EDITAR) ================= -->
+  <dialog id="modal-evento" class="app-modal" aria-labelledby="modal-evento-title">
+    <div class="modal-header">
+      <h2 id="modal-evento-title" class="modal-title">Evento</h2>
+      <button type="button" class="btn btn-small" id="btn-cerrar-modal-evento" aria-label="Cerrar modal">✕</button>
+    </div>
+    <form id="form-modal-evento" class="modal-form">
+      <input type="hidden" id="modal-evento-id">
+
+      <div class="form-group">
+        <label for="evento-input-titulo" class="form-label">Título del evento *</label>
+        <input type="text" id="evento-input-titulo" class="input-field" required placeholder="Ej. Cita con el médico">
+      </div>
+
+      <div class="form-group">
+        <label for="evento-input-fecha" class="form-label">Fecha *</label>
+        <input type="date" id="evento-input-fecha" class="input-field" required>
+      </div>
+
+      <div class="form-group">
+        <label for="evento-input-hora" class="form-label">Hora (opcional)</label>
+        <input type="time" id="evento-input-hora" class="input-field">
+      </div>
+
+      <div class="form-group">
+        <label for="evento-input-nota" class="form-label">Nota corta</label>
+        <textarea id="evento-input-nota" class="input-field" rows="3" placeholder="Detalles o recordatorios..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn" id="btn-cancelar-evento">Cancelar</button>
+        <button type="submit" class="btn btn-ink" id="btn-guardar-evento">Guardar evento</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ================= MODAL ACCESIBLE: EDITAR TAREA ================= -->
+  <dialog id="modal-tarea" class="app-modal" aria-labelledby="modal-tarea-title">
+    <div class="modal-header">
+      <h2 id="modal-tarea-title" class="modal-title">Editar tarea</h2>
+      <button type="button" class="btn btn-small" id="btn-cerrar-modal-tarea" aria-label="Cerrar modal">✕</button>
+    </div>
+    <form id="form-modal-tarea" class="modal-form">
+      <input type="hidden" id="modal-tarea-id">
+
+      <div class="form-group">
+        <label for="tarea-edit-titulo" class="form-label">Título de la tarea *</label>
+        <input type="text" id="tarea-edit-titulo" class="input-field" required>
+      </div>
+
+      <div class="form-group">
+        <label for="tarea-edit-prioridad" class="form-label">Prioridad</label>
+        <select id="tarea-edit-prioridad" class="select-field">
+          <option value="alta">🔴 Alta</option>
+          <option value="media">🟡 Media</option>
+          <option value="baja">🟢 Baja</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="tarea-edit-fecha" class="form-label">Fecha límite (opcional)</label>
+        <input type="date" id="tarea-edit-fecha" class="input-field">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn" id="btn-cancelar-tarea">Cancelar</button>
+        <button type="submit" class="btn btn-ink">Guardar cambios</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ================= MODAL ACCESIBLE: CONFIRMAR ELIMINACIÓN ================= -->
+  <dialog id="modal-confirmar" class="app-modal" aria-labelledby="modal-confirm-title">
+    <div class="modal-header">
+      <h2 id="modal-confirm-title" class="modal-title">Confirmar acción</h2>
+      <button type="button" class="btn btn-small" id="btn-cerrar-confirm" aria-label="Cerrar ventana">✕</button>
+    </div>
+    <p id="modal-confirm-msg" style="font-size: 1.05rem; margin-bottom: 20px; color: var(--tinta-grafito);">
+      ¿Estás seguro de que deseas eliminar este elemento?
+    </p>
+    <div class="modal-footer">
+      <button type="button" class="btn" id="btn-confirm-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-danger" id="btn-confirm-aceptar">Eliminar</button>
+    </div>
+  </dialog>
+
+  <!-- MENSAJE TOAST FLOTANTE -->
+  <div id="toast" class="toast-notification" role="status" aria-live="polite"></div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT PURO (ESTADO, ALMACENAMIENTO, RENDER Y EVENTOS)
+       ========================================================================== -->
+  <script>
+    /**
+     * AGENDA PERSONAL - JAVASCRIPT PURO
+     * Manejo completo del estado, renderizado reactivo y almacenamiento local.
+     */
+
+    // ==========================================================================
+    // 1. UTILIDADES DE FECHAS (HORA LOCAL, SIN ERRORES DE ZONA HORARIA)
+    // ==========================================================================
+
+    /**
+     * Retorna la fecha en formato estricto 'AAAA-MM-DD' usando la hora local.
+     * Evita el clásico error de UTC donde a ciertas horas la fecha salta de día.
+     */
+    function obtenerFechaLocalStr(fecha = new Date()) {
+      const year = fecha.getFullYear();
+      const month = String(fecha.getMonth() + 1).padStart(2, '0');
+      const day = String(fecha.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    /**
+     * Parsea una cadena 'AAAA-MM-DD' a objeto Date en hora local.
+     */
+    function parsearFechaLocal(cadenaFecha) {
+      if (!cadenaFecha) return null;
+      const [year, month, day] = cadenaFecha.split('-').map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0);
+    }
+
+    /**
+     * Formatea una fecha 'AAAA-MM-DD' para mostrar en español (México).
+     * Ej: "Jueves, 24 de septiembre de 2026"
+     */
+    function formatearFechaEspanol(cadenaFecha) {
+      const fecha = parsearFechaLocal(cadenaFecha);
+      if (!fecha) return '';
+      return fecha.toLocaleDateString('es-MX', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    /**
+     * Formatea fecha corta 'AAAA-MM-DD' (Ej: "24 sep")
+     */
+    function formatearFechaCorta(cadenaFecha) {
+      const fecha = parsearFechaLocal(cadenaFecha);
+      if (!fecha) return '';
+      return fecha.toLocaleDateString('es-MX', {
+        day: 'numeric',
+        month: 'short'
+      });
+    }
+
+    // ==========================================================================
+    // 2. ESTADO GLOBAL DE LA APLICACIÓN
+    // ==========================================================================
+    const STORAGE_KEY = 'agenda_personal_datos_v1';
+
+    // Fecha actual del sistema
+    const HOY_FECHA_STR = obtenerFechaLocalStr();
+    const HOY_OBJ = new Date();
+
+    const Estado = {
+      // Navegación del calendario
+      calYear: HOY_OBJ.getFullYear(),
+      calMonth: HOY_OBJ.getMonth(), // 0 = Enero, 11 = Diciembre
+      selectedDate: HOY_FECHA_STR,
+
+      // Colecciones de datos
+      events: [],
+      tasks: [],
+      notes: [],
+
+      // Filtros de tareas
+      taskFilterPriority: 'todas',
+      taskFilterStatus: 'pendientes',
+
+      // Búsqueda de notas
+      noteSearchQuery: '',
+
+      // Pestañas activas
+      activeMobileTab: 'calendario',
+      activeRightSubtab: 'tareas',
+
+      // Callback para el diálogo de confirmación
+      confirmCallback: null
+    };
+
+    // ==========================================================================
+    // 3. PERSISTENCIA EN LOCALSTORAGE CON TRY/CATCH Y DATOS INICIALES
+    // ==========================================================================
+    function guardarEnAlmacenamiento() {
+      try {
+        const datos = {
+          events: Estado.events,
+          tasks: Estado.tasks,
+          notes: Estado.notes,
+          version: '1.0'
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+      } catch (error) {
+        console.error('Error al guardar en localStorage:', error);
+        mostrarToast('⚠️ No se pudo guardar la información en el almacenamiento local.');
+      }
+    }
+
+    function cargarDesdeAlmacenamiento() {
+      try {
+        const json = localStorage.getItem(STORAGE_KEY);
+        if (json) {
+          const datos = JSON.parse(json);
+          Estado.events = Array.isArray(datos.events) ? datos.events : [];
+          Estado.tasks = Array.isArray(datos.tasks) ? datos.tasks : [];
+          Estado.notes = Array.isArray(datos.notes) ? datos.notes : [];
+        } else {
+          // Datos iniciales de cortesía para una libreta acogedora
+          crearDatosDeDemostracion();
+        }
+      } catch (error) {
+        console.error('Error al leer de localStorage:', error);
+        Estado.events = [];
+        Estado.tasks = [];
+        Estado.notes = [];
+      }
+    }
+
+    function crearDatosDeDemostracion() {
+      Estado.events = [
+        {
+          id: 'ev_' + Date.now(),
+          title: 'Revisión y bienvenida a mi agenda',
+          date: HOY_FECHA_STR,
+          time: '09:00',
+          note: 'Comenzar a organizar mis tareas, citas y notas importantes.'
+        }
+      ];
+
+      Estado.tasks = [
+        {
+          id: 'tk_1',
+          title: 'Organizar mi semana y pendientes clave',
+          priority: 'alta',
+          dueDate: HOY_FECHA_STR,
+          completed: false,
+          createdAt: Date.now() - 2000
+        },
+        {
+          id: 'tk_2',
+          title: 'Comprar plumas y libretas nuevas',
+          priority: 'media',
+          dueDate: '',
+          completed: false,
+          createdAt: Date.now() - 1000
+        },
+        {
+          id: 'tk_3',
+          title: 'Configurar respaldo de datos en la computadora',
+          priority: 'baja',
+          dueDate: '',
+          completed: true,
+          createdAt: Date.now()
+        }
+      ];
+
+      Estado.notes = [
+        {
+          id: 'nt_1',
+          text: '¡Bienvenido a tu agenda estilo libreta! 📒✨\nPuedes agregar eventos tocando cualquier día, crear notas rápidas y organizar tus tareas con prioridades.',
+          color: 'color-yellow',
+          rotation: -1.2,
+          isEditing: false
+        },
+        {
+          id: 'nt_2',
+          text: 'Idea: Exportar mi respaldo JSON los viernes para sincronizar mi teléfono y mi compu.',
+          color: 'color-pink',
+          rotation: 1.1,
+          isEditing: false
+        }
+      ];
+
+      guardarEnAlmacenamiento();
+    }
+
+    // ==========================================================================
+    // 4. MENSAJES TOAST Y MODALES ACCESIBLES
+    // ==========================================================================
+    let toastTimeout = null;
+    function mostrarToast(mensaje) {
+      const toast = document.getElementById('toast');
+      toast.textContent = mensaje;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function abrirModal(dialogElement) {
+      if (typeof dialogElement.showModal === 'function') {
+        dialogElement.showModal();
+      } else {
+        dialogElement.setAttribute('open', '');
+      }
+    }
+
+    function cerrarModal(dialogElement) {
+      if (typeof dialogElement.close === 'function') {
+        dialogElement.close();
+      } else {
+        dialogElement.removeAttribute('open');
+      }
+    }
+
+    /**
+     * Muestra confirmación antes de borrar elementos
+     */
+    function solicitarConfirmacion(mensaje, onConfirmar) {
+      const modal = document.getElementById('modal-confirmar');
+      document.getElementById('modal-confirm-msg').textContent = mensaje;
+      Estado.confirmCallback = onConfirmar;
+      abrirModal(modal);
+    }
+
+    // ==========================================================================
+    // 5. RENDERIZADO: CALENDARIO Y EVENTOS
+    // ==========================================================================
+    const NOMBRES_MESES = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    function renderizarCalendario() {
+      const container = document.getElementById('calendar-days-container');
+      const monthYearTitle = document.getElementById('cal-month-year');
+      
+      const year = Estado.calYear;
+      const month = Estado.calMonth;
+
+      monthYearTitle.textContent = `${NOMBRES_MESES[month]} de ${year}`;
+
+      container.innerHTML = '';
+
+      // Cálculo para que la semana empiece en LUNES (0 = Lunes, 6 = Domingo)
+      const primerDiaMes = new Date(year, month, 1);
+      let diaSemanaInicio = primerDiaMes.getDay(); // 0 = Domingo, 1 = Lunes...
+      let diaInicioLunes = (diaSemanaInicio + 6) % 7; // Lunes pasa a ser 0, Domingo 6
+
+      const totalDiasMes = new Date(year, month + 1, 0).getDate();
+
+      // Celdas vacías previas
+      for (let i = 0; i < diaInicioLunes; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        emptyCell.setAttribute('aria-hidden', 'true');
+        container.appendChild(emptyCell);
+      }
+
+      // Días del mes actual
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const diaStr = String(dia).padStart(2, '0');
+        const mesStr = String(month + 1).padStart(2, '0');
+        const fechaCelda = `${year}-${mesStr}-${diaStr}`;
+
+        const cell = document.createElement('button');
+        cell.className = 'calendar-day';
+        cell.setAttribute('type', 'button');
+        cell.setAttribute('data-fecha', fechaCelda);
+        cell.setAttribute('aria-label', `${dia} de ${NOMBRES_MESES[month]} de ${year}`);
+
+        if (fechaCelda === HOY_FECHA_STR) {
+          cell.classList.add('is-today');
+        }
+
+        if (fechaCelda === Estado.selectedDate) {
+          cell.classList.add('is-selected');
+          cell.setAttribute('aria-current', 'date');
+        }
+
+        // Número de día
+        const numSpan = document.createElement('span');
+        numSpan.className = 'day-num';
+        numSpan.textContent = dia;
+        cell.appendChild(numSpan);
+
+        // Indicadores de eventos o tareas que vencen
+        const tieneEventos = Estado.events.some(ev => ev.date === fechaCelda);
+        const tieneTareas = Estado.tasks.some(tk => tk.dueDate === fechaCelda && !tk.completed);
+
+        if (tieneEventos || tieneTareas) {
+          const indicators = document.createElement('div');
+          indicators.className = 'day-indicators';
+
+          if (tieneEventos) {
+            const dotEv = document.createElement('span');
+            dotEv.className = 'dot-event';
+            dotEv.title = 'Tiene eventos programados';
+            indicators.appendChild(dotEv);
+          }
+
+          if (tieneTareas) {
+            const dotTk = document.createElement('span');
+            dotTk.className = 'dot-task';
+            dotTk.title = 'Tiene tareas que vencen este día';
+            indicators.appendChild(dotTk);
+          }
+
+          cell.appendChild(indicators);
+        }
+
+        cell.addEventListener('click', () => {
+          Estado.selectedDate = fechaCelda;
+          renderizarCalendario();
+          renderizarEventosDelDia();
+        });
+
+        container.appendChild(cell);
+      }
+
+      renderizarEventosDelDia();
+    }
+
+    function renderizarEventosDelDia() {
+      const container = document.getElementById('events-container');
+      const title = document.getElementById('selected-day-title');
+      
+      const fechaSeleccionada = Estado.selectedDate;
+      title.textContent = formatearFechaEspanol(fechaSeleccionada);
+
+      // Filtrar eventos del día seleccionado y ordenar por hora
+      const eventosDia = Estado.events
+        .filter(ev => ev.date === fechaSeleccionada)
+        .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+      // Verificar si hay tareas que vencen en esta fecha
+      const tareasVencenHoy = Estado.tasks.filter(tk => tk.dueDate === fechaSeleccionada);
+
+      container.innerHTML = '';
+
+      if (eventosDia.length === 0 && tareasVencenHoy.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-state-icon">☕</span>
+            <p class="empty-state-text">No hay eventos ni tareas agendadas para este día. ¡Toca "+ Agregar evento" para anotar uno!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Si hay tareas que vencen este día, mostramos un aviso amigable
+      if (tareasVencenHoy.length > 0) {
+        const tareasBox = document.createElement('li');
+        tareasBox.style.listStyle = 'none';
+        tareasBox.style.marginBottom = '8px';
+        tareasBox.innerHTML = `
+          <div style="background: #fff1f2; border: 1px dashed #fca5a5; border-radius: 6px; padding: 8px 12px; font-size: 0.9rem; color: #991b1b; display: flex; align-items: center; justify-content: space-between;">
+            <span>📌 <strong>Tareas que vencen hoy:</strong> ${tareasVencenHoy.length} pendiente(s)</span>
+            <button class="btn btn-small" id="btn-ir-tareas-dia" style="min-height: 32px; padding: 2px 8px; font-size: 0.8rem;">Ver tareas</button>
+          </div>
+        `;
+        container.appendChild(tareasBox);
+
+        tareasBox.querySelector('#btn-ir-tareas-dia').addEventListener('click', () => {
+          cambiarPestañaPrincipal('tareas');
+        });
+      }
+
+      // Renderizar cada evento
+      eventosDia.forEach(ev => {
+        const li = document.createElement('li');
+        li.className = 'event-card';
+
+        const info = document.createElement('div');
+        info.className = 'event-info';
+
+        if (ev.time) {
+          const timePill = document.createElement('span');
+          timePill.className = 'event-time-pill';
+          timePill.textContent = `⏰ ${ev.time} hrs`;
+          info.appendChild(timePill);
+        }
+
+        const evTitle = document.createElement('div');
+        evTitle.className = 'event-title';
+        evTitle.textContent = ev.title;
+        info.appendChild(evTitle);
+
+        if (ev.note) {
+          const evNote = document.createElement('div');
+          evNote.className = 'event-note';
+          evNote.textContent = ev.note;
+          info.appendChild(evNote);
+        }
+
+        // Botones de acción (Editar y Borrar)
+        const actions = document.createElement('div');
+        actions.className = 'card-actions';
+
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-small';
+        btnEdit.innerHTML = '✏️';
+        btnEdit.setAttribute('aria-label', `Editar evento ${ev.title}`);
+        btnEdit.title = 'Editar evento';
+        btnEdit.addEventListener('click', () => abrirModalEditarEvento(ev));
+
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn btn-small btn-danger';
+        btnDel.innerHTML = '🗑️';
+        btnDel.setAttribute('aria-label', `Borrar evento ${ev.title}`);
+        btnDel.title = 'Borrar evento';
+        btnDel.addEventListener('click', () => {
+          solicitarConfirmacion(`¿Deseas eliminar el evento "${ev.title}"?`, () => {
+            Estado.events = Estado.events.filter(item => item.id !== ev.id);
+            guardarEnAlmacenamiento();
+            renderizarCalendario();
+            mostrarToast('🗑️ Evento eliminado.');
+          });
+        });
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
+
+        li.appendChild(info);
+        li.appendChild(actions);
+        container.appendChild(li);
+      });
+    }
+
+    // ==========================================================================
+    // 6. RENDERIZADO: TAREAS CON PRIORIDAD Y FILTROS
+    // ==========================================================================
+    function renderizarTareas() {
+      const container = document.getElementById('tasks-container');
+      const badgeCount = document.getElementById('tasks-count-badge');
+
+      const filtroPrioridad = Estado.taskFilterPriority;
+      const filtroEstado = Estado.taskFilterStatus;
+
+      // Prioridad numérica para ordenamiento (Alta = 1, Media = 2, Baja = 3)
+      const prioridadOrden = { alta: 1, media: 2, baja: 3 };
+
+      // Filtrado
+      let tareasFiltradas = Estado.tasks.filter(tk => {
+        if (filtroPrioridad !== 'todas' && tk.priority !== filtroPrioridad) return false;
+        if (filtroEstado === 'pendientes' && tk.completed) return false;
+        if (filtroEstado === 'hechas' && !tk.completed) return false;
+        return true;
+      });
+
+      // Ordenar por:
+      // 1. Estado (pendientes primero, hechas al final)
+      // 2. Prioridad (Alta > Media > Baja)
+      // 3. Fecha límite (las más próximas primero; sin fecha al final)
+      tareasFiltradas.sort((a, b) => {
+        if (a.completed !== b.completed) {
+          return a.completed ? 1 : -1;
+        }
+        if (prioridadOrden[a.priority] !== prioridadOrden[b.priority]) {
+          return prioridadOrden[a.priority] - prioridadOrden[b.priority];
+        }
+        if (a.dueDate && b.dueDate) {
+          return a.dueDate.localeCompare(b.dueDate);
+        }
+        if (a.dueDate && !b.dueDate) return -1;
+        if (!a.dueDate && b.dueDate) return 1;
+        return (b.createdAt || 0) - (a.createdAt || 0);
+      });
+
+      // Actualizar contador de tareas pendientes
+      const totalPendientes = Estado.tasks.filter(t => !t.completed).length;
+      badgeCount.textContent = `${totalPendientes} pendiente${totalPendientes === 1 ? '' : 's'}`;
+
+      container.innerHTML = '';
+
+      if (tareasFiltradas.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-state-icon">📋</span>
+            <p class="empty-state-text">No hay tareas que mostrar con los filtros actuales. ¡Todo listo o agrega una nueva tarea arriba!</p>
+          </div>
+        `;
+        return;
+      }
+
+      tareasFiltradas.forEach(tk => {
+        const li = document.createElement('li');
+        li.className = `task-card ${tk.completed ? 'is-completed' : ''}`;
+
+        const left = document.createElement('div');
+        left.className = 'task-left';
+
+        // Botón checkbox accesible
+        const btnCheck = document.createElement('button');
+        btnCheck.className = `task-checkbox-btn ${tk.completed ? 'checked' : ''}`;
+        btnCheck.setAttribute('type', 'button');
+        btnCheck.setAttribute('aria-label', tk.completed ? `Marcar como pendiente: ${tk.title}` : `Marcar como hecha: ${tk.title}`);
+        btnCheck.innerHTML = tk.completed ? '✓' : '';
+        btnCheck.addEventListener('click', () => {
+          tk.completed = !tk.completed;
+          guardarEnAlmacenamiento();
+          renderizarTareas();
+          renderizarCalendario(); // Actualiza posibles marcadores de vencimiento
+          mostrarToast(tk.completed ? '✅ Tarea marcada como hecha.' : '↩️ Tarea marcada como pendiente.');
+        });
+
+        const details = document.createElement('div');
+        details.className = 'task-details';
+
+        const title = document.createElement('span');
+        title.className = 'task-title';
+        title.textContent = tk.title;
+        details.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+
+        // Badge de prioridad estilo resaltador
+        const priorityBadge = document.createElement('span');
+        priorityBadge.className = `badge-priority priority-${tk.priority}`;
+        priorityBadge.textContent = tk.priority.toUpperCase();
+        meta.appendChild(priorityBadge);
+
+        // Fecha límite si existe
+        if (tk.dueDate) {
+          const dueSpan = document.createElement('span');
+          dueSpan.className = 'task-due-date';
+          
+          const esHoy = tk.dueDate === HOY_FECHA_STR;
+          const esVencida = tk.dueDate < HOY_FECHA_STR && !tk.completed;
+
+          if (esVencida) {
+            dueSpan.classList.add('is-overdue');
+            dueSpan.innerHTML = `⚠️ ¡Venció el ${formatearFechaCorta(tk.dueDate)}!`;
+          } else if (esHoy) {
+            dueSpan.style.color = 'var(--tinta-roja)';
+            dueSpan.style.fontWeight = '700';
+            dueSpan.innerHTML = `📅 ¡Vence hoy!`;
+          } else {
+            dueSpan.innerHTML = `📅 Vence: ${formatearFechaCorta(tk.dueDate)}`;
+          }
+
+          meta.appendChild(dueSpan);
+        }
+
+        details.appendChild(meta);
+        left.appendChild(btnCheck);
+        left.appendChild(details);
+
+        // Acciones: Editar y Borrar
+        const actions = document.createElement('div');
+        actions.className = 'card-actions';
+
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-small';
+        btnEdit.innerHTML = '✏️';
+        btnEdit.setAttribute('aria-label', `Editar tarea ${tk.title}`);
+        btnEdit.title = 'Editar tarea';
+        btnEdit.addEventListener('click', () => abrirModalEditarTarea(tk));
+
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn btn-small btn-danger';
+        btnDel.innerHTML = '🗑️';
+        btnDel.setAttribute('aria-label', `Borrar tarea ${tk.title}`);
+        btnDel.title = 'Borrar tarea';
+        btnDel.addEventListener('click', () => {
+          solicitarConfirmacion(`¿Deseas eliminar la tarea "${tk.title}"?`, () => {
+            Estado.tasks = Estado.tasks.filter(item => item.id !== tk.id);
+            guardarEnAlmacenamiento();
+            renderizarTareas();
+            renderizarCalendario();
+            mostrarToast('🗑️ Tarea eliminada.');
+          });
+        });
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
+
+        li.appendChild(left);
+        li.appendChild(actions);
+        container.appendChild(li);
+      });
+    }
+
+    // ==========================================================================
+    // 7. RENDERIZADO: NOTAS RÁPIDAS (POST-ITS)
+    // ==========================================================================
+    function renderizarNotas() {
+      const container = document.getElementById('notes-container');
+      const query = Estado.noteSearchQuery.trim().toLowerCase();
+
+      let notasFiltradas = Estado.notes;
+      if (query) {
+        notasFiltradas = notasFiltradas.filter(n => n.text.toLowerCase().includes(query));
+      }
+
+      container.innerHTML = '';
+
+      if (notasFiltradas.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <span class="empty-state-icon">📝</span>
+            <p class="empty-state-text">${query ? 'No se encontraron notas con esa búsqueda.' : 'No tienes notas rápidas. ¡Escribe arriba para pegar tu primer papelito!'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      notasFiltradas.forEach(nota => {
+        const postIt = document.createElement('article');
+        postIt.className = `post-it ${nota.color || 'color-yellow'}`;
+        
+        // Rotación sutil y fija por nota para evitar saltos en pantalla
+        const rotacion = nota.rotation || 0;
+        postIt.style.transform = `rotate(${rotacion}deg)`;
+
+        // Cinta adhesiva superior
+        const cinta = document.createElement('div');
+        cinta.className = 'washi-tape';
+        postIt.appendChild(cinta);
+
+        if (nota.isEditing) {
+          // MODO EDICIÓN EN EL MISMO LUGAR
+          const editWrapper = document.createElement('div');
+          editWrapper.className = 'post-it-inline-edit';
+
+          const textarea = document.createElement('textarea');
+          textarea.className = 'post-it-textarea';
+          textarea.value = nota.text;
+          textarea.setAttribute('aria-label', 'Editar contenido de la nota');
+
+          const editActions = document.createElement('div');
+          editActions.style.display = 'flex';
+          editActions.style.gap = '6px';
+          editActions.style.justifyContent = 'flex-end';
+
+          const btnGuardar = document.createElement('button');
+          btnGuardar.className = 'btn btn-small btn-ink';
+          btnGuardar.textContent = 'Guardar';
+          btnGuardar.addEventListener('click', () => {
+            const nuevoTexto = textarea.value.trim();
+            if (nuevoTexto) {
+              nota.text = nuevoTexto;
+              nota.isEditing = false;
+              guardarEnAlmacenamiento();
+              renderizarNotas();
+              mostrarToast('💾 Nota actualizada.');
+            }
+          });
+
+          const btnCancelar = document.createElement('button');
+          btnCancelar.className = 'btn btn-small';
+          btnCancelar.textContent = 'Cancelar';
+          btnCancelar.addEventListener('click', () => {
+            nota.isEditing = false;
+            renderizarNotas();
+          });
+
+          editActions.appendChild(btnCancelar);
+          editActions.appendChild(btnGuardar);
+
+          editWrapper.appendChild(textarea);
+          editWrapper.appendChild(editActions);
+          postIt.appendChild(editWrapper);
+
+          // Enfocar el textarea de inmediato
+          setTimeout(() => textarea.focus(), 50);
+
+        } else {
+          // MODO LECTURA NORMAL
+          const textEl = document.createElement('p');
+          textEl.className = 'post-it-text';
+          textEl.textContent = nota.text;
+          postIt.appendChild(textEl);
+
+          const footer = document.createElement('div');
+          footer.className = 'post-it-footer';
+
+          const hint = document.createElement('span');
+          hint.textContent = 'Papelito';
+
+          const actions = document.createElement('div');
+          actions.className = 'card-actions';
+
+          const btnEdit = document.createElement('button');
+          btnEdit.className = 'btn btn-small';
+          btnEdit.innerHTML = '✏️';
+          btnEdit.setAttribute('aria-label', 'Editar nota');
+          btnEdit.title = 'Editar nota';
+          btnEdit.addEventListener('click', () => {
+            // Activar modo edición en este post-it
+            nota.isEditing = true;
+            renderizarNotas();
+          });
+
+          const btnDel = document.createElement('button');
+          btnDel.className = 'btn btn-small btn-danger';
+          btnDel.innerHTML = '🗑️';
+          btnDel.setAttribute('aria-label', 'Borrar nota');
+          btnDel.title = 'Borrar nota';
+          btnDel.addEventListener('click', () => {
+            solicitarConfirmacion('¿Deseas eliminar esta nota rápida?', () => {
+              Estado.notes = Estado.notes.filter(item => item.id !== nota.id);
+              guardarEnAlmacenamiento();
+              renderizarNotas();
+              mostrarToast('🗑️ Nota eliminada.');
+            });
+          });
+
+          actions.appendChild(btnEdit);
+          actions.appendChild(btnDel);
+
+          footer.appendChild(hint);
+          footer.appendChild(actions);
+          postIt.appendChild(footer);
+        }
+
+        container.appendChild(postIt);
+      });
+    }
+
+    // ==========================================================================
+    // 8. CONTROL DE PESTAÑAS (RESPONSIVO MÓVIL Y ESCRITORIO)
+    // ==========================================================================
+    function cambiarPestañaPrincipal(tabName) {
+      Estado.activeMobileTab = tabName;
+
+      // Actualizar pestañas superiores (móvil)
+      document.querySelectorAll('.notebook-tab').forEach(tab => {
+        const isActive = tab.getAttribute('data-tab') === tabName;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      // En móvil: mostrar solo la vista seleccionada
+      const viewCalendario = document.getElementById('view-calendario');
+      const viewDerecha = document.getElementById('view-derecha');
+      const secTareas = document.getElementById('section-tareas');
+      const secNotas = document.getElementById('section-notas');
+
+      if (window.innerWidth < 960) {
+        if (tabName === 'calendario') {
+          viewCalendario.classList.add('active-mobile-view');
+          viewDerecha.classList.remove('active-mobile-view');
+        } else {
+          viewCalendario.classList.remove('active-mobile-view');
+          viewDerecha.classList.add('active-mobile-view');
+
+          if (tabName === 'tareas') {
+            secTareas.style.display = 'block';
+            secNotas.style.display = 'none';
+          } else if (tabName === 'notas') {
+            secTareas.style.display = 'none';
+            secNotas.style.display = 'block';
+          }
+        }
+      }
+    }
+
+    function cambiarSubpestañaDerecha(subtabName) {
+      Estado.activeRightSubtab = subtabName;
+
+      document.querySelectorAll('.subtab-btn').forEach(btn => {
+        const isActive = btn.getAttribute('data-subtab') === subtabName;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      const secTareas = document.getElementById('section-tareas');
+      const secNotas = document.getElementById('section-notas');
+
+      if (subtabName === 'tareas') {
+        secTareas.style.display = 'block';
+        secNotas.style.display = 'none';
+      } else if (subtabName === 'notas') {
+        secTareas.style.display = 'none';
+        secNotas.style.display = 'block';
+      } else if (subtabName === 'ambas') {
+        secTareas.style.display = 'block';
+        secNotas.style.display = 'block';
+      }
+    }
+
+    // ==========================================================================
+    // 9. GESTIÓN DE EVENTOS (NUEVO Y EDICIÓN)
+    // ==========================================================================
+    function abrirModalNuevoEvento() {
+      const modal = document.getElementById('modal-evento');
+      document.getElementById('modal-evento-title').textContent = 'Nuevo evento';
+      document.getElementById('modal-evento-id').value = '';
+      document.getElementById('evento-input-titulo').value = '';
+      document.getElementById('evento-input-fecha').value = Estado.selectedDate || HOY_FECHA_STR;
+      document.getElementById('evento-input-hora').value = '';
+      document.getElementById('evento-input-nota').value = '';
+      abrirModal(modal);
+      document.getElementById('evento-input-titulo').focus();
+    }
+
+    function abrirModalEditarEvento(ev) {
+      const modal = document.getElementById('modal-evento');
+      document.getElementById('modal-evento-title').textContent = 'Editar evento';
+      document.getElementById('modal-evento-id').value = ev.id;
+      document.getElementById('evento-input-titulo').value = ev.title;
+      document.getElementById('evento-input-fecha').value = ev.date;
+      document.getElementById('evento-input-hora').value = ev.time || '';
+      document.getElementById('evento-input-nota').value = ev.note || '';
+      abrirModal(modal);
+      document.getElementById('evento-input-titulo').focus();
+    }
+
+    document.getElementById('form-modal-evento').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('modal-evento-id').value;
+      const title = document.getElementById('evento-input-titulo').value.trim();
+      const date = document.getElementById('evento-input-fecha').value;
+      const time = document.getElementById('evento-input-hora').value;
+      const note = document.getElementById('evento-input-nota').value.trim();
+
+      if (!title || !date) return;
+
+      if (id) {
+        // Editar existente
+        const ev = Estado.events.find(item => item.id === id);
+        if (ev) {
+          ev.title = title;
+          ev.date = date;
+          ev.time = time;
+          ev.note = note;
+          mostrarToast('💾 Evento modificado con éxito.');
+        }
+      } else {
+        // Crear nuevo
+        const nuevoEvento = {
+          id: 'ev_' + Date.now() + Math.random().toString(36).substr(2, 4),
+          title,
+          date,
+          time,
+          note
+        };
+        Estado.events.push(nuevoEvento);
+        Estado.selectedDate = date; // Enfocar el día del nuevo evento
+        mostrarToast('🎉 Evento guardado.');
+      }
+
+      guardarEnAlmacenamiento();
+      cerrarModal(document.getElementById('modal-evento'));
+      renderizarCalendario();
+    });
+
+    // ==========================================================================
+    // 10. GESTIÓN DE TAREAS (NUEVA Y EDICIÓN)
+    // ==========================================================================
+    document.getElementById('form-nueva-tarea').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const titleInput = document.getElementById('task-input-title');
+      const priorityInput = document.getElementById('task-input-priority');
+      const dateInput = document.getElementById('task-input-date');
+
+      const title = titleInput.value.trim();
+      const priority = priorityInput.value;
+      const dueDate = dateInput.value;
+
+      if (!title) return;
+
+      const nuevaTarea = {
+        id: 'tk_' + Date.now() + Math.random().toString(36).substr(2, 4),
+        title,
+        priority,
+        dueDate,
+        completed: false,
+        createdAt: Date.now()
+      };
+
+      Estado.tasks.push(nuevaTarea);
+      guardarEnAlmacenamiento();
+
+      titleInput.value = '';
+      dateInput.value = '';
+      priorityInput.value = 'media';
+
+      renderizarTareas();
+      renderizarCalendario();
+      mostrarToast('✅ Tarea agregada.');
+    });
+
+    function abrirModalEditarTarea(tk) {
+      const modal = document.getElementById('modal-tarea');
+      document.getElementById('modal-tarea-id').value = tk.id;
+      document.getElementById('tarea-edit-titulo').value = tk.title;
+      document.getElementById('tarea-edit-prioridad').value = tk.priority;
+      document.getElementById('tarea-edit-fecha').value = tk.dueDate || '';
+      abrirModal(modal);
+      document.getElementById('tarea-edit-titulo').focus();
+    }
+
+    document.getElementById('form-modal-tarea').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('modal-tarea-id').value;
+      const title = document.getElementById('tarea-edit-titulo').value.trim();
+      const priority = document.getElementById('tarea-edit-prioridad').value;
+      const dueDate = document.getElementById('tarea-edit-fecha').value;
+
+      if (!title) return;
+
+      const tk = Estado.tasks.find(item => item.id === id);
+      if (tk) {
+        tk.title = title;
+        tk.priority = priority;
+        tk.dueDate = dueDate;
+        guardarEnAlmacenamiento();
+        renderizarTareas();
+        renderizarCalendario();
+        mostrarToast('💾 Tarea actualizada.');
+      }
+
+      cerrarModal(document.getElementById('modal-tarea'));
+    });
+
+    // ==========================================================================
+    // 11. GESTIÓN DE NOTAS RÁPIDAS
+    // ==========================================================================
+    document.getElementById('form-nueva-nota').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('note-input-text');
+      const colorSelect = document.getElementById('note-color-select');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      // Rotación aleatoria moderada (-1.5 a 1.5 grados) para dar estilo papel sin exagerar
+      const rotacion = (Math.random() * 3 - 1.5).toFixed(1);
+
+      const nuevaNota = {
+        id: 'nt_' + Date.now() + Math.random().toString(36).substr(2, 4),
+        text,
+        color: colorSelect.value,
+        rotation: parseFloat(rotacion),
+        isEditing: false
+      };
+
+      Estado.notes.unshift(nuevaNota);
+      guardarEnAlmacenamiento();
+
+      input.value = '';
+      renderizarNotas();
+      mostrarToast('📌 Nota pegada.');
+    });
+
+    document.getElementById('note-search-input').addEventListener('input', (e) => {
+      Estado.noteSearchQuery = e.target.value;
+      renderizarNotas();
+    });
+
+    // ==========================================================================
+    // 12. EXPORTAR E IMPORTAR RESPALDO JSON
+    // ==========================================================================
+    document.getElementById('btn-exportar').addEventListener('click', () => {
+      try {
+        const datos = {
+          events: Estado.events,
+          tasks: Estado.tasks,
+          notes: Estado.notes,
+          fechaExportacion: obtenerFechaLocalStr(),
+          version: '1.0'
+        };
+
+        const jsonStr = JSON.stringify(datos, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `agenda-respaldo-${obtenerFechaLocalStr()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        mostrarToast('📥 Respaldo exportado exitosamente.');
+      } catch (err) {
+        console.error('Error al exportar:', err);
+        mostrarToast('⚠️ Ocurrió un error al generar el archivo de respaldo.');
+      }
+    });
+
+    document.getElementById('btn-importar').addEventListener('click', () => {
+      document.getElementById('file-import').click();
+    });
+
+    document.getElementById('file-import').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const contenido = JSON.parse(event.target.result);
+
+          if (!Array.isArray(contenido.events) || !Array.isArray(contenido.tasks) || !Array.isArray(contenido.notes)) {
+            throw new Error('Formato de respaldo inválido.');
+          }
+
+          solicitarConfirmacion(
+            '¿Deseas restaurar este respaldo? Reemplazará todos tus eventos, tareas y notas actuales.',
+            () => {
+              Estado.events = contenido.events;
+              Estado.tasks = contenido.tasks;
+              Estado.notes = contenido.notes;
+              guardarEnAlmacenamiento();
+              renderizarCalendario();
+              renderizarTareas();
+              renderizarNotas();
+              mostrarToast('📂 Respaldo importado correctamente.');
+            }
+          );
+        } catch (err) {
+          console.error('Error al importar:', err);
+          mostrarToast('⚠️ El archivo seleccionado no es un respaldo válido de la agenda.');
+        } finally {
+          // Limpiar input de archivo para permitir cargar el mismo archivo nuevamente si se desea
+          e.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // ==========================================================================
+    // 13. LISTENERS DE INTERFAZ Y MODALES
+    // ==========================================================================
+    // Navegación del calendario
+    document.getElementById('cal-prev-month').addEventListener('click', () => {
+      if (Estado.calMonth === 0) {
+        Estado.calMonth = 11;
+        Estado.calYear--;
+      } else {
+        Estado.calMonth--;
+      }
+      renderizarCalendario();
+    });
+
+    document.getElementById('cal-next-month').addEventListener('click', () => {
+      if (Estado.calMonth === 11) {
+        Estado.calMonth = 0;
+        Estado.calYear++;
+      } else {
+        Estado.calMonth++;
+      }
+      renderizarCalendario();
+    });
+
+    document.getElementById('cal-today-btn').addEventListener('click', () => {
+      const hoy = new Date();
+      Estado.calYear = hoy.getFullYear();
+      Estado.calMonth = hoy.getMonth();
+      Estado.selectedDate = HOY_FECHA_STR;
+      renderizarCalendario();
+    });
+
+    document.getElementById('btn-nuevo-evento').addEventListener('click', abrirModalNuevoEvento);
+    document.getElementById('btn-cerrar-modal-evento').addEventListener('click', () => cerrarModal(document.getElementById('modal-evento')));
+    document.getElementById('btn-cancelar-evento').addEventListener('click', () => cerrarModal(document.getElementById('modal-evento')));
+
+    document.getElementById('btn-cerrar-modal-tarea').addEventListener('click', () => cerrarModal(document.getElementById('modal-tarea')));
+    document.getElementById('btn-cancelar-tarea').addEventListener('click', () => cerrarModal(document.getElementById('modal-tarea')));
+
+    // Modal de confirmación
+    document.getElementById('btn-confirm-cancelar').addEventListener('click', () => {
+      cerrarModal(document.getElementById('modal-confirmar'));
+      Estado.confirmCallback = null;
+    });
+
+    document.getElementById('btn-cerrar-confirm').addEventListener('click', () => {
+      cerrarModal(document.getElementById('modal-confirmar'));
+      Estado.confirmCallback = null;
+    });
+
+    document.getElementById('btn-confirm-aceptar').addEventListener('click', () => {
+      if (typeof Estado.confirmCallback === 'function') {
+        Estado.confirmCallback();
+      }
+      cerrarModal(document.getElementById('modal-confirmar'));
+      Estado.confirmCallback = null;
+    });
+
+    // Cerrar modales al hacer clic sobre el fondo (backdrop)
+    [
+      document.getElementById('modal-evento'),
+      document.getElementById('modal-tarea'),
+      document.getElementById('modal-confirmar')
+    ].forEach(dialog => {
+      if (!dialog) return;
+      dialog.addEventListener('click', (e) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!isInDialog) {
+          cerrarModal(dialog);
+          if (dialog.id === 'modal-confirmar') {
+            Estado.confirmCallback = null;
+          }
+        }
+      });
+    });
+
+    // Filtros de tareas
+    document.getElementById('filter-priority').addEventListener('change', (e) => {
+      Estado.taskFilterPriority = e.target.value;
+      renderizarTareas();
+    });
+
+    document.getElementById('filter-status').addEventListener('change', (e) => {
+      Estado.taskFilterStatus = e.target.value;
+      renderizarTareas();
+    });
+
+    // Pestañas superiores (móvil)
+    document.querySelectorAll('.notebook-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        cambiarPestañaPrincipal(tab.getAttribute('data-tab'));
+      });
+    });
+
+    // Subpestañas derecha (escritorio)
+    document.querySelectorAll('.subtab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        cambiarSubpestañaDerecha(btn.getAttribute('data-subtab'));
+      });
+    });
+
+    // Sincronizar diseño al redimensionar ventana
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 960) {
+        // En escritorio se muestran ambas páginas
+        document.getElementById('view-calendario').style.display = 'block';
+        document.getElementById('view-derecha').style.display = 'block';
+        cambiarSubpestañaDerecha(Estado.activeRightSubtab);
+      } else {
+        // En móvil se vuelve al modo de una página a la vez
+        document.getElementById('view-calendario').style.display = '';
+        document.getElementById('view-derecha').style.display = '';
+        document.getElementById('section-tareas').style.display = '';
+        document.getElementById('section-notas').style.display = '';
+        cambiarPestañaPrincipal(Estado.activeMobileTab);
+      }
+    });
+
+    // ==========================================================================
+    // 14. INICIALIZACIÓN
+    // ==========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Estampar fecha de hoy en el encabezado
+      document.getElementById('today-stamp').textContent = formatearFechaCorta(HOY_FECHA_STR);
+
+      // Cargar datos guardados
+      cargarDesdeAlmacenamiento();
+
+      // Renderizar secciones principales
+      renderizarCalendario();
+      renderizarTareas();
+      renderizarNotas();
+
+      // Inicializar pestañas según tamaño de pantalla
+      if (window.innerWidth >= 960) {
+        cambiarSubpestañaDerecha('tareas');
+      } else {
+        cambiarPestañaPrincipal('calendario');
+      }
+    });
+  </script>
+</body>
+</html>
